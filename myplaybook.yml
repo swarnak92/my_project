@@ -1,0 +1,43 @@
+---
+ - name: Install java, Tomcat, Maven
+   hosts: webservers
+   become: yes
+   remote_user: ansadmin
+   gather_facts: false
+   tasks:
+    - name: Update repo
+      yum:
+        name: "*"
+        state: latest
+    - name: Installing openJDK
+      yum:
+        name: java-1.8.0-openjdk    
+    - name: Downloading tomcat
+      get_url:
+        url: "https://mirrors.estointernet.in/apache/tomcat/tomcat-9/v9.0.48/bin/apache-tomcat-9.0.48.tar.gz"
+        dest: /home/ansadmin
+    - name: Extracting tomcat
+      unarchive:
+        src: "/home/ansadmin/apache-tomcat-9.0.48.tar.gz"
+        dest: /home/ansadmin
+        remote_src: yes
+    - name: Renaming tomcat home
+      command: mv /home/ansadmin/apache-tomcat-9.0.48 /home/ansadmin/tomcat
+    - name: starting tomcat
+      shell: nohup /home/ansadmin/tomcat/bin/startup.sh &      
+    - name: Downloading maven
+      get_url: 
+        url: "https://mirrors.estointernet.in/apache/maven/maven-3/3.8.1/binaries/apache-maven-3.8.1-bin.tar.gz"
+        dest: /home/ansadmin
+    - name: Extracting Maven
+      unarchive:
+        src: "/home/ansadmin/apache-maven-3.8.1-bin.tar.gz"      
+        dest: /home/ansadmin
+        remote_src: yes
+    - name: Renaming apache home
+      command: mv /home/ansadmin/apache-maven-3.8.1 /home/ansadmin/apache
+    - name: starting maven
+      shell: nohup /home/ansadmin/apache/bin/maven.sh &
+       
+   
+
